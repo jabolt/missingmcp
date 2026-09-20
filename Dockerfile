@@ -25,7 +25,7 @@ COPY scripts ./scripts
 # ModuleNotFoundError (2026-07-31 incident). The worker's other deps float too;
 # pin here, in the same resolve, whenever one of them breaks the same way.
 RUN uv pip install --system . && \
-    uv pip install --system "garmin-mcp @ git+https://github.com/Taxuspt/garmin_mcp@${GARMIN_MCP_REF}" "mcp<2"
+    uv pip install --system "garmin-mcp @ git+https://github.com/jabolt/garmin_mcp@${GARMIN_MCP_REF}" "mcp<2"
 ENTRYPOINT ["tini", "--"]
 CMD ["missingmcp"]
 EXPOSE 8080
