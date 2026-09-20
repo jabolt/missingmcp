@@ -1,0 +1,25 @@
+services:
+  gateway:
+    build: ./missingmcp
+    env_file: .env
+    volumes:
+      - gateway-data:/data
+    expose:
+      - "8080"
+    restart: unless-stopped
+  caddy:
+    image: caddy:2
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy-data:/data
+      - caddy-config:/config
+    depends_on:
+      - gateway
+    restart: unless-stopped
+volumes:
+  gateway-data:
+  caddy-data:
+  caddy-config:
