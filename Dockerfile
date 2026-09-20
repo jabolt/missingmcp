@@ -13,7 +13,10 @@ WORKDIR /app
 # (12 commits since e8554bc: no dependency changes, stdlib-only new imports, no
 # new network destinations, sign-in log lines unchanged) plus the fork's
 # configurable food region (GARMIN_FOOD_REGION, default GB).
-ARG GARMIN_MCP_REF=cb320b5750f27cd9771dff318a2087a13472ecd9
+# 33f26f5 (2026-09-20, jabolt/garmin_mcp): reviewed 2026-09-20 — fork-only change on top
+# of cb320b5: search_foods sends regionCode/languageCode (as Garmin Connect web does),
+# with a 400-only fallback; no upstream commits, no dependency changes.
+ARG GARMIN_MCP_REF=33f26f5f93285bf9d0e6f8cd6f505139537dba0e
 ENV GARMIN_MCP_REF=${GARMIN_MCP_REF}
 
 # git: uv installs the pinned garmin_mcp worker from a git ref.
