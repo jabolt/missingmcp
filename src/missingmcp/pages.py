@@ -22,7 +22,11 @@ _OG_IMAGE_VER = hashlib.sha256(
     (Path(__file__).parent / "static" / _OG_IMAGE).read_bytes()
 ).hexdigest()[:8]
 _OG_IMAGE_W, _OG_IMAGE_H = 1200, 630     # keep in sync with scripts/gen_og_image.py
-_OG_IMAGE_ALT = ("MissingMCP — Claude & ChatGPT answer from your own Garmin "
+# Self-hosted fork: the name this instance shows in the shared chrome, browser-tab
+# titles and link previews. Callers still pass upstream's titles ("… | MissingMCP");
+# render_page swaps the name in one place so upstream merges stay clean.
+BRAND = "Bolt Garmin MCP"
+_OG_IMAGE_ALT = (f"{BRAND} — Claude & ChatGPT answer from your own Garmin "
                  "data.")
 _DEFAULT_DESC = ("The connectors your AI is missing — sign in once, add a URL, "
                  "start asking.")
@@ -68,7 +72,7 @@ def _head_meta(title: str, desc: str, public_url: str, path: str,
         lines += [
             f'<link rel="canonical" href="{url}">',
             '<meta property="og:type" content="website">',
-            '<meta property="og:site_name" content="MissingMCP">',
+            f'<meta property="og:site_name" content="{BRAND}">',
             f'<meta property="og:title" content="{t}">',
             f'<meta property="og:description" content="{d}">',
             f'<meta property="og:url" content="{url}">',
@@ -95,6 +99,7 @@ def render_page(fragment: str, title: str, desc: str | None = None, *,
     caller to fill afterwards. `social_desc` overrides the link-preview line when
     the search description is too long to survive a preview intact."""
     desc = desc or _DEFAULT_DESC
+    title = title.replace("MissingMCP", BRAND)
     return (tpl("_layout.html")
             .replace("{TITLE}", title)
             .replace("{DESC}", desc)

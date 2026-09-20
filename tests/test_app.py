@@ -1,6 +1,8 @@
 import json
+import pathlib
 import re
 from starlette.testclient import TestClient
+import missingmcp
 from missingmcp import store
 from missingmcp.app import build_app, _run_data_cleanup
 from missingmcp.config import load_config
@@ -186,6 +188,10 @@ def test_home_shows_logo_lockup(tmp_path):
     assert 'src="/static/icon.png"' in r          # mark in the header
     assert 'class="mcp"' in r and 'class="tld"' in r  # CSS wordmark parts
     assert '/static/favicon-32.png' in r          # PNG favicon link
+    # self-hosted fork: Bolt branding in the shared chrome, not upstream's wordmark
+    assert 'alt="Bolt Garmin MCP"' in r
+    assert "missing<span" not in r
+    assert '<meta property="og:site_name" content="Bolt Garmin MCP">' in r
 
 
 def test_seo_crawler_surface(tmp_path):
@@ -202,17 +208,20 @@ def test_seo_crawler_surface(tmp_path):
     assert "https://gw.example.com/garmin/mcp" in llms
 
 
-def test_support_link_sits_at_the_connect_moment(tmp_path):
-    # The old gateway converted supporters with the BMC link right under the
-    # connect steps (3/28); buried below the full tool list it converts 0.
-    # Keep it inside the connect moment on every connector page.
-    for page in (_client(tmp_path).get("/garmin").text,
+def test_no_donation_asks_on_this_instance(tmp_path):
+    # Self-hosted private fork: upstream's "buy me a beer" asks are removed from
+    # the shared chrome and from every page fragment (the author credit stays —
+    # see test_subpages_share_site_chrome).
+    templates = pathlib.Path(missingmcp.__file__).parent / "templates"
+    for tpl in sorted(templates.glob("*.html")):
+        text = tpl.read_text()
+        assert "buymeacoffee.com" not in text, tpl.name
+        assert "Buy me a beer" not in text, tpl.name
+    for page in (_client(tmp_path).get("/").text,
+                 _client(tmp_path).get("/garmin").text,
                  _whoop_client().get("/whoop").text):
-        assert page.index("buymeacoffee.com") < page.index('id="tips"')
-    # home: inside "How it works" (i.e. before the security section)
-    home = _client(tmp_path).get("/").text
-    assert home.index("buymeacoffee.com") < home.index('id="security"')
-    assert "Everything here is free" in home
+        assert "buymeacoffee.com" not in page
+        assert 'id="support"' not in page
 
 
 def test_mcp_server_cards(tmp_path):
@@ -246,7 +255,7 @@ def test_seo_head_meta(tmp_path):
     assert "Garmin MCP Server" in home                     # title targets the query
     garmin = c.get("/garmin").text
     assert '<link rel="canonical" href="https://gw.example.com/garmin">' in garmin
-    assert "<title>Garmin MCP Server — Connect Garmin to Claude | MissingMCP" in garmin
+    assert "<title>Garmin MCP Server — Connect Garmin to Claude | Bolt Garmin MCP" in garmin
     assert 'property="og:title"' in garmin
     assert '"@type": "SoftwareApplication"' in garmin      # JSON-LD data block
 

@@ -41,13 +41,12 @@ ACCENT  = "#818cf8"
 LIVE    = "#34d399"
 
 # --- copy --------------------------------------------------------------------
-EYEBROW  = "MissingMCP"
+EYEBROW  = "Bolt Garmin MCP"
 ASK      = ["How did I sleep", "this week?"]        # pre-wrapped: the break is a
                                                     # design decision, not luck
 ANSWER   = [("Claude & ChatGPT answer from ", False), ("your own", True),
             (" Garmin data.", False)]               # (text, emphasized)
-ENDPOINTS = [("missingmcp.com/", "garmin", "/mcp"),
-             ("missingmcp.com/", "whoop", "/mcp")]
+ENDPOINTS = [("garmin.boltweb.net/", "garmin", "/mcp")]
 
 # --- fonts: system faces, variable axes set explicitly so weights are exact ---
 NY   = "/System/Library/Fonts/NewYork.ttf"          # axes: Optical Size, Weight, GRAD
