@@ -9,7 +9,11 @@ WORKDIR /app
 # network destinations; NOTE the worker now logs in on a background thread and
 # answers /healthz before the sign-in resolves, which is why WorkerManager gates
 # spawns on the sign-in log lines (forward.login_outcome).
-ARG GARMIN_MCP_REF=e8554bcd761a4494dc12a98461224bb3dcf1fbc5
+# cb320b5 (2026-09-20, jabolt/garmin_mcp): reviewed 2026-09-20 — upstream 655efb8
+# (12 commits since e8554bc: no dependency changes, stdlib-only new imports, no
+# new network destinations, sign-in log lines unchanged) plus the fork's
+# configurable food region (GARMIN_FOOD_REGION, default GB).
+ARG GARMIN_MCP_REF=cb320b5750f27cd9771dff318a2087a13472ecd9
 ENV GARMIN_MCP_REF=${GARMIN_MCP_REF}
 
 # git: uv installs the pinned garmin_mcp worker from a git ref.
