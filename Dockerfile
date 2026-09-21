@@ -19,7 +19,10 @@ WORKDIR /app
 # ea7fe4d (2026-09-21, jabolt/garmin_mcp): reviewed 2026-09-21 — fork-only change on top
 # of 33f26f5: optional stateless streamable-http (GARMIN_MCP_STATELESS, off by default),
 # so a recycled worker cannot strand clients on a dead MCP session; no dependency changes.
-ARG GARMIN_MCP_REF=ea7fe4daabd9d86badc20bae6d6a64412b824302
+# 5f903c4 (2026-09-21, jabolt/garmin_mcp): reviewed 2026-09-21 — fork-only change on top
+# of ea7fe4d: six Lifestyle Logging write tools in a new module (same connectapi host as
+# the existing read tool); no dependency changes, no new network destinations.
+ARG GARMIN_MCP_REF=5f903c4c82faedc8c1d64328428e12f0ebcda616
 ENV GARMIN_MCP_REF=${GARMIN_MCP_REF}
 
 # git: uv installs the pinned garmin_mcp worker from a git ref.
