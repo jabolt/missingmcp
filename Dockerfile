@@ -16,7 +16,10 @@ WORKDIR /app
 # 33f26f5 (2026-09-20, jabolt/garmin_mcp): reviewed 2026-09-20 — fork-only change on top
 # of cb320b5: search_foods sends regionCode/languageCode (as Garmin Connect web does),
 # with a 400-only fallback; no upstream commits, no dependency changes.
-ARG GARMIN_MCP_REF=33f26f5f93285bf9d0e6f8cd6f505139537dba0e
+# ea7fe4d (2026-09-21, jabolt/garmin_mcp): reviewed 2026-09-21 — fork-only change on top
+# of 33f26f5: optional stateless streamable-http (GARMIN_MCP_STATELESS, off by default),
+# so a recycled worker cannot strand clients on a dead MCP session; no dependency changes.
+ARG GARMIN_MCP_REF=ea7fe4daabd9d86badc20bae6d6a64412b824302
 ENV GARMIN_MCP_REF=${GARMIN_MCP_REF}
 
 # git: uv installs the pinned garmin_mcp worker from a git ref.
