@@ -31,7 +31,10 @@ WORKDIR /app
 # d409705 (2026-09-25, jabolt/garmin_mcp): reviewed 2026-09-25 — fork-only change on top
 # of cb8e597: read-only get_course_location_share (course start/finish for an Apple Maps
 # share to the watch); no dependency changes, no new network destinations.
-ARG GARMIN_MCP_REF=d4097050bc323b0599050e42a2fb34050bc8a421
+# bdae41d (2026-09-25, jabolt/garmin_mcp): reviewed 2026-09-25 — fork-only change on top
+# of d409705: course tools steer watch saved locations to get_course_location_share
+# (description and response text only); no dependency changes.
+ARG GARMIN_MCP_REF=bdae41d9b4f947ab6833ca13c8b0690db13066e9
 ENV GARMIN_MCP_REF=${GARMIN_MCP_REF}
 
 # git: uv installs the pinned garmin_mcp worker from a git ref.
