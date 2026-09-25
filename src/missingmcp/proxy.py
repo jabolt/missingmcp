@@ -10,6 +10,8 @@ from .log import log, log_warn, log_error, log_exc
 
 # Upstream forward timeout for both strategies (parity with the TS proxy's 30s).
 FORWARD_TIMEOUT_S = 30.0
+# Request headers MCP 2026-07-28 requires on every POST (plus Mcp-Param-*); lowercase, as ASGI delivers them.
+_MCP_METADATA_HEADERS = frozenset({"mcp-protocol-version", "mcp-method", "mcp-name"})
 
 
 def _mcp_tool(body) -> "str | None":
@@ -212,6 +214,11 @@ async def handle_mcp(request, method, adapter, conn, manager, config, secret, ra
         if not security.validate_session_id(sid):
             return JSONResponse({"error": "invalid_session_id"}, status_code=400)
         upstream_headers["Mcp-Session-Id"] = sid
+    # MCP 2026-07-28 request metadata: the upstream routes on MCP-Protocol-Version
+    # and checks Mcp-Method / Mcp-Name (and any Mcp-Param-*) against the body.
+    for name, value in request.headers.items():
+        if name in _MCP_METADATA_HEADERS or name.startswith("mcp-param-"):
+            upstream_headers[name] = value
     if method != "DELETE":
         upstream_headers["Content-Type"] = "application/json"
     upstream_headers.update(extra_headers)

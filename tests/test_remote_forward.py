@@ -52,6 +52,29 @@ def test_upstream_receives_injected_and_threaded_headers(fake_remote):
     assert json.loads(body)["method"] == "initialize"
 
 
+
+def test_mcp_2026_request_headers_are_forwarded(fake_remote):
+    """MCP 2026-07-28 servers route on MCP-Protocol-Version and require Mcp-Method /
+    Mcp-Name to match the body (400 HeaderMismatch otherwise); Mcp-Param-* headers
+    MUST be forwarded by intermediaries. Dropping them turns every modern request
+    into a legacy one, so server/discover never gets a real answer."""
+    _, c = _setup(fake_remote)
+    r = _post(c, headers={"MCP-Protocol-Version": "2026-07-28", "Mcp-Method": "tools/call",
+                          "Mcp-Name": "get_courses", "Mcp-Param-Region": "us-west1",
+                          "Cookie": "session=abc", "X-Unrelated": "1"},
+              body={"jsonrpc": "2.0", "id": 1, "method": "tools/call",
+                    "params": {"name": "get_courses", "arguments": {}}})
+    assert r.status_code == 200
+    _, _, raw, _ = fake_remote.calls[-1]
+    hdrs = {k.lower(): v for k, v in raw.items()}   # header names are case-insensitive
+    assert hdrs.get("mcp-protocol-version") == "2026-07-28"
+    assert hdrs.get("mcp-method") == "tools/call"
+    assert hdrs.get("mcp-name") == "get_courses"
+    assert hdrs.get("mcp-param-region") == "us-west1"
+    assert hdrs.get("cookie") is None          # still an allowlist, not a pass-through
+    assert hdrs.get("x-unrelated") is None
+
+
 def test_json_response_passes_through(fake_remote):
     _, c = _setup(fake_remote)
     r = _post(c)

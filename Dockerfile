@@ -34,7 +34,13 @@ WORKDIR /app
 # bdae41d (2026-09-25, jabolt/garmin_mcp): reviewed 2026-09-25 — fork-only change on top
 # of d409705: course tools steer watch saved locations to get_course_location_share
 # (description and response text only); no dependency changes.
-ARG GARMIN_MCP_REF=bdae41d9b4f947ab6833ca13c8b0690db13066e9
+# 778a255 (2026-09-25, jabolt/garmin_mcp): reviewed 2026-09-25 — fork-only change on top
+# of bdae41d: port to mcp 2.x MCPServer so the worker answers MCP 2026-07-28
+# (server/discover, tools/list ttlMs) as well as initialize-handshake clients. New deps
+# via mcp 2.2: mcp-types, opentelemetry-api (API only, no exporter), httpx2, truststore;
+# no new network destinations. Needs the proxy to forward MCP-Protocol-Version /
+# Mcp-Method / Mcp-Name / Mcp-Param-* (this commit).
+ARG GARMIN_MCP_REF=778a25547b028d65c45baedc16ff0b7773d78183
 ENV GARMIN_MCP_REF=${GARMIN_MCP_REF}
 
 # git: uv installs the pinned garmin_mcp worker from a git ref.
@@ -44,13 +50,13 @@ RUN apt-get update && apt-get install -y --no-install-recommends git tini && rm 
 COPY pyproject.toml README.md LICENSE ./
 COPY src ./src
 COPY scripts ./scripts
-# mcp<2: garmin_mcp is written against the mcp 1.x API (mcp.server.fastmcp) and
-# doesn't bound its own dependency — mcp 2.0.0 (2026-07-28) removed that module,
-# and the first image rebuild after the release crashed every worker spawn with
-# ModuleNotFoundError (2026-07-31 incident). The worker's other deps float too;
+# mcp>=2.2,<3: the pinned worker uses the mcp 2.x MCPServer API (ported 2026-09-25;
+# before that it needed mcp<2, see the 2026-07-31 incident when mcp 2.0.0 removed
+# mcp.server.fastmcp). The worker bounds mcp itself now; pinning it here too keeps a
+# future major release from reaching an image rebuild. The worker's other deps float;
 # pin here, in the same resolve, whenever one of them breaks the same way.
 RUN uv pip install --system . && \
-    uv pip install --system "garmin-mcp @ git+https://github.com/jabolt/garmin_mcp@${GARMIN_MCP_REF}" "mcp<2"
+    uv pip install --system "garmin-mcp @ git+https://github.com/jabolt/garmin_mcp@${GARMIN_MCP_REF}" "mcp>=2.2.0,<3"
 ENTRYPOINT ["tini", "--"]
 CMD ["missingmcp"]
 EXPOSE 8080
