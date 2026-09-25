@@ -28,7 +28,10 @@ WORKDIR /app
 # cb8e597 (2026-09-25, jabolt/garmin_mcp): reviewed 2026-09-25 — fork-only change on top
 # of b44a0a0: download_course_gpx returns a summary (start/finish) unless include_gpx;
 # no dependency changes, no new network destinations.
-ARG GARMIN_MCP_REF=cb8e597919fce984e2149a0d9e2b5dfe706e3090
+# d409705 (2026-09-25, jabolt/garmin_mcp): reviewed 2026-09-25 — fork-only change on top
+# of cb8e597: read-only get_course_location_share (course start/finish for an Apple Maps
+# share to the watch); no dependency changes, no new network destinations.
+ARG GARMIN_MCP_REF=d4097050bc323b0599050e42a2fb34050bc8a421
 ENV GARMIN_MCP_REF=${GARMIN_MCP_REF}
 
 # git: uv installs the pinned garmin_mcp worker from a git ref.
