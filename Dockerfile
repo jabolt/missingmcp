@@ -25,7 +25,10 @@ WORKDIR /app
 # b44a0a0 (2026-09-25, jabolt/garmin_mcp): reviewed 2026-09-25 — fork-only change on top
 # of 5f903c4: course tools tolerate Garmin's null coursePoints; download_course_gpx returns
 # Garmin's own GPX export inline (same connectapi host); no dependency changes.
-ARG GARMIN_MCP_REF=b44a0a03220d211c333067210603fd7447946238
+# cb8e597 (2026-09-25, jabolt/garmin_mcp): reviewed 2026-09-25 — fork-only change on top
+# of b44a0a0: download_course_gpx returns a summary (start/finish) unless include_gpx;
+# no dependency changes, no new network destinations.
+ARG GARMIN_MCP_REF=cb8e597919fce984e2149a0d9e2b5dfe706e3090
 ENV GARMIN_MCP_REF=${GARMIN_MCP_REF}
 
 # git: uv installs the pinned garmin_mcp worker from a git ref.
